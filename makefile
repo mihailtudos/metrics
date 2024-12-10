@@ -1,4 +1,10 @@
-run/test1:
-	metricstest -test.v -test.run=^TestIteration1$ -agent-binary-path=cmd/server/server
+build/server:
+	cd cmd/server && \
+		go build -buildvcs=false -o server && \
+		cd ../..
 
-PHONY: run/test1
+run/test1: build/server
+	metricstest -test.v -test.run="^TestIteration1$$" \
+		-binary-path=cmd/server/server
+
+PHONY: run/test1, build/server
