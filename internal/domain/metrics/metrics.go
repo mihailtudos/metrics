@@ -14,6 +14,16 @@ type Metric struct {
     Value *float64   `json:"value,omitempty"`
 }
 
+// For float64 (gauge metrics)
+func Float64Ptr(v float64) *float64 {
+    return &v
+}
+
+// For int64 (counter metrics)
+func Int64Ptr(v int64) *int64 {
+    return &v
+}
+
 // Value object for validation
 type MetricValidation struct {
     IsValid bool
