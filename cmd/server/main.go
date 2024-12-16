@@ -6,26 +6,21 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/mihailtudos/metrics/internal/domain/metrics"
 )
 
 var ErrMissingMetricType = errors.New("missing metric type")
 var ErrMissingMetricName = errors.New("missing metric name")
 var ErrInvalidMetricValue = errors.New("invalid metric value")
 
-type Metric struct {
-	ID    string
-	MType string
-	Delta int64
-	Value float64
-}
-
 type MemStorage struct {
-	Metrics map[string]Metric
+	Metrics map[string]metrics.Metric
 }
 
 func NewMemStorage() *MemStorage {
 	return &MemStorage{
-		Metrics: make(map[string]Metric),
+		Metrics: make(map[string]metrics.Metric),
 	}
 }
 
@@ -61,9 +56,9 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	metric := Metric{
+	metric := metrics.Metric{
 		ID:    parts[1],
-		MType: parts[0],
+		MType: metrics.MetricType(parts[0]),
 	}
 
 	if parts[0] == "gauge" {
@@ -73,7 +68,7 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		metric.Value = val
+		metric.Value = &val
 	}
 
 	if parts[0] == "counter" {
@@ -83,7 +78,7 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		metric.Delta = val
+		metric.Delta = &val
 	}
 
 	Stroage.Metrics[metric.ID] = metric
