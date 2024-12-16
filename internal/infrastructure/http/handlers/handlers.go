@@ -31,9 +31,9 @@ func NewHandler(Store MetricsStore) *Handler {
 
 func (h *Handler) HandlePOSTMetric(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-        w.WriteHeader(http.StatusMethodNotAllowed)
-        return
-    }
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 	url := strings.TrimPrefix(r.URL.Path, "/update/")
 	parts := strings.Split(url, "/")
 	if len(parts) != 3 {

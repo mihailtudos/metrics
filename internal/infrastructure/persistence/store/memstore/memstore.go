@@ -7,11 +7,13 @@ type MemStorage struct {
 }
 
 func NewMemStore() *MemStorage {
-	return &MemStorage{}
+	return &MemStorage{
+		Metrics: map[string]metrics.Metric{},
+	}
 }
 
 func (m *MemStorage) Store(metric metrics.Metric) error {
 	m.Metrics[metric.ID] = metric
-	
+
 	return nil
 }
