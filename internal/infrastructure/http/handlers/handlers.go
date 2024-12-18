@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 	"text/template"
 
 	"embed"
@@ -40,34 +39,27 @@ func NewHandler(Store MetricsStore) *Handler {
 }
 
 func (h *Handler) HandlePOSTMetric(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-	url := strings.TrimPrefix(r.URL.Path, "/update/")
-	parts := strings.Split(url, "/")
-	if len(parts) != 3 {
-		http.Error(w, "Invalid URL", http.StatusNotFound)
-		return
-	}
+	mType := chi.URLParam(r, "type")
+	mName := chi.URLParam(r, "name")
+	mValue := chi.URLParam(r, "value")
 
-	if parts[0] != "counter" && parts[0] != "gauge" {
+	if mType == "" || mType != string(metrics.CounterType) && mType != string(metrics.GaugeType) {
 		http.Error(w, ErrMissingMetricType.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if parts[1] == "" {
+	if mName == "" {
 		http.Error(w, ErrMissingMetricName.Error(), http.StatusNotFound)
 		return
 	}
 
 	metric := metrics.Metric{
-		ID:    parts[1],
-		MType: metrics.MetricType(parts[0]),
+		ID:    mName,
+		MType: metrics.MetricType(mType),
 	}
 
-	if parts[0] == "gauge" {
-		val, err := strconv.ParseFloat(parts[2], 64)
+	if mType == string(metrics.GaugeType) {
+		val, err := strconv.ParseFloat(mValue, 64)
 		if err != nil {
 			http.Error(w, ErrInvalidMetricValue.Error(), http.StatusBadRequest)
 			return
@@ -76,8 +68,8 @@ func (h *Handler) HandlePOSTMetric(w http.ResponseWriter, r *http.Request) {
 		metric.Value = &val
 	}
 
-	if parts[0] == "counter" {
-		val, err := strconv.ParseInt(parts[2], 10, 64)
+	if mType == string(metrics.CounterType) {
+		val, err := strconv.ParseInt(mValue, 10, 64)
 		if err != nil {
 			http.Error(w, ErrInvalidMetricValue.Error(), http.StatusBadRequest)
 			return

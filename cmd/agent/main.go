@@ -11,7 +11,7 @@ const ServerURL = "http://localhost:8080"
 
 var (
 	pollInterval   = time.Second * 2
-	reportInterval = time.Second * 4
+	reportInterval = time.Second * 10
 )
 
 func main() {

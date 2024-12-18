@@ -23,10 +23,11 @@ run/test2: build/agent
 		-source-path=. \
  		-agent-binary-path=cmd/agent/agent
 
-run/test3: build/agent
-	metricstest -test.v -test.run="^TestIteration3$$" \
-		-source-path=. \
- 		-agent-binary-path=cmd/agent/agent
+run/test3:
+	metricstest -test.v -test.run=^TestIteration3[AB]*$ \
+    	-source-path=. \
+    	-agent-binary-path=cmd/agent/agent \
+    	-binary-path=cmd/server/server
 
 run/tests:
 	go test ./... -count=1 -coverprofile ./profiles/cover.out && go tool cover -func ./profiles/cover.out

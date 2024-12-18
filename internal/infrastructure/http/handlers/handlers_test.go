@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/mihailtudos/metrics/internal/domain/metrics"
 	"github.com/mihailtudos/metrics/internal/infrastructure/http/handlers/mocks"
 	"github.com/stretchr/testify/assert"
@@ -70,15 +71,19 @@ func TestHandlePOSTMetric(t *testing.T) {
 			tc.setupMock(store)
 
 			handler := NewHandler(store)
-			r := httptest.NewRequest(tc.method, tc.path, nil)
-			w := httptest.NewRecorder()
 
-			handler.HandlePOSTMetric(w, r)
-			res := w.Result()
+			r := chi.NewRouter()
+			r.Post("/update/{type}/{name}/{value}", handler.HandlePOSTMetric)
 
-			assert.Equal(t, tc.wantStatus, res.StatusCode)
+			ts := httptest.NewServer(r)
+            defer ts.Close()
 
-			res.Body.Close()
+			req, _ := http.NewRequest(tc.method, tc.path, nil)
+            w := httptest.NewRecorder()
+
+			r.ServeHTTP(w, req)
+
+			assert.Equal(t, tc.wantStatus, w.Code)
 		})
 	}
 }

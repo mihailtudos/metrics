@@ -13,6 +13,17 @@ func NewMemStore() *MemStorage {
 }
 
 func (m *MemStorage) Store(metric metrics.Metric) error {
+	if metric.MType == metrics.CounterType {
+		_, ok := m.Metrics[metric.ID]
+		if ok {
+			*m.Metrics[metric.ID].Delta += *metric.Delta
+		} else {
+			m.Metrics[metric.ID] = metric
+		}
+
+		return nil
+	}
+
 	m.Metrics[metric.ID] = metric
 
 	return nil
