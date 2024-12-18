@@ -75,7 +75,7 @@ func TestHandlePOSTMetric(t *testing.T) {
 
 			handler.HandlePOSTMetric(w, r)
 			res := w.Result()
-			
+
 			assert.Equal(t, tc.wantStatus, res.StatusCode)
 
 			res.Body.Close()

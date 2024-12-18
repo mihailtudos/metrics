@@ -2,11 +2,16 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"text/template"
 
+	"embed"
+
+	"github.com/go-chi/chi/v5"
 	"github.com/mihailtudos/metrics/internal/domain/metrics"
 )
 
@@ -14,9 +19,14 @@ var ErrMissingMetricType = errors.New("missing metric type")
 var ErrMissingMetricName = errors.New("missing metric name")
 var ErrInvalidMetricValue = errors.New("invalid metric value")
 
+//go:embed templates/metrics.index.html
+var fs embed.FS
+
 //go:generate go run github.com/vektra/mockery/v2@v2.50.0 --name=MetricsStore
 type MetricsStore interface {
 	Store(metric metrics.Metric) error
+	GetAllMetrics() ([]metrics.Metric, error)
+	GetOneMetric(metricName string) (metrics.Metric, error)
 }
 
 type Handler struct {
@@ -83,4 +93,55 @@ func (h *Handler) HandlePOSTMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handler) HandleShowAllMetrics(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFS(fs, "templates/metrics.index.html")
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	metrics, err := h.MetricsStore.GetAllMetrics()
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(200)
+	tmpl.Execute(w, metrics)
+}
+
+func (h *Handler) HandleShowMetricValue(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+	metricType := chi.URLParam(r, "type")
+
+	if metricType == "" ||
+		(metricType != string(metrics.CounterType) && metricType != string(metrics.GaugeType)) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	metric, err := h.MetricsStore.GetOneMetric(name)
+	if err != nil {
+		if errors.Is(err, metrics.ErrMetricNotFound) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	res := ""
+	if metric.Delta != nil {
+		res = fmt.Sprintf("%v", *metric.Delta)
+	}
+
+	if metric.Value != nil {
+		res = fmt.Sprintf("%v", *metric.Value)
+	}
+
+	w.WriteHeader(200)
+	w.Write([]byte(res))
 }

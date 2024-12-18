@@ -7,8 +7,8 @@ import (
 	"github.com/mihailtudos/metrics/internal/infrastructure/metrics/reporter"
 )
 
-
 const ServerURL = "http://localhost:8080"
+
 var (
 	pollInterval   = time.Second * 2
 	reportInterval = time.Second * 4

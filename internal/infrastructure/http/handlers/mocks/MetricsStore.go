@@ -12,6 +12,64 @@ type MetricsStore struct {
 	mock.Mock
 }
 
+// GetAllMetrics provides a mock function with no fields
+func (_m *MetricsStore) GetAllMetrics() ([]metrics.Metric, error) {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllMetrics")
+	}
+
+	var r0 []metrics.Metric
+	var r1 error
+	if rf, ok := ret.Get(0).(func() ([]metrics.Metric, error)); ok {
+		return rf()
+	}
+	if rf, ok := ret.Get(0).(func() []metrics.Metric); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]metrics.Metric)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetOneMetric provides a mock function with given fields: metricName
+func (_m *MetricsStore) GetOneMetric(metricName string) (metrics.Metric, error) {
+	ret := _m.Called(metricName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetOneMetric")
+	}
+
+	var r0 metrics.Metric
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (metrics.Metric, error)); ok {
+		return rf(metricName)
+	}
+	if rf, ok := ret.Get(0).(func(string) metrics.Metric); ok {
+		r0 = rf(metricName)
+	} else {
+		r0 = ret.Get(0).(metrics.Metric)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(metricName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Store provides a mock function with given fields: metric
 func (_m *MetricsStore) Store(metric metrics.Metric) error {
 	ret := _m.Called(metric)

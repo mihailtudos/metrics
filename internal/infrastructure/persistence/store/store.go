@@ -7,6 +7,8 @@ import (
 
 type MetricsStorer interface {
 	Store(metrics.Metric) error
+	GetAllMetrics() ([]metrics.Metric, error)
+	GetOneMetric(metricName string) (metrics.Metric, error)
 }
 
 type MetricStore struct {
