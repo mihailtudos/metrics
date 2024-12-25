@@ -76,10 +76,10 @@ func TestHandlePOSTMetric(t *testing.T) {
 			r.Post("/update/{type}/{name}/{value}", handler.HandlePOSTMetric)
 
 			ts := httptest.NewServer(r)
-            defer ts.Close()
+			defer ts.Close()
 
 			req, _ := http.NewRequest(tc.method, tc.path, nil)
-            w := httptest.NewRecorder()
+			w := httptest.NewRecorder()
 
 			r.ServeHTTP(w, req)
 

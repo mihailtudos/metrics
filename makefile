@@ -28,6 +28,12 @@ run/test3:
     	-source-path=. \
     	-agent-binary-path=cmd/agent/agent \
     	-binary-path=cmd/server/server
+	
+run/test4:
+	metricstest -test.v -test.run=^TestIteration4[AB]*$ \
+    	-source-path=. \
+    	-agent-binary-path=cmd/agent/agent \
+    	-binary-path=cmd/server/server
 
 run/tests:
 	go test ./... -count=1 -coverprofile ./profiles/cover.out && go tool cover -func ./profiles/cover.out
@@ -35,4 +41,4 @@ run/tests:
 show/cover:
 	go tool cover -html=./profiles/cover.out
 
-PHONY: run/test1, run/test2, run/test3, build/server, run/tests, show/cover, run/agent 
+PHONY: run/test1, run/test2, run/test3, run/test4, build/server, run/tests, show/cover, run/agent 

@@ -3,22 +3,18 @@ package main
 import (
 	"time"
 
+	"github.com/mihailtudos/metrics/internal/infrastructure/config/agent"
 	"github.com/mihailtudos/metrics/internal/infrastructure/metrics/collector"
 	"github.com/mihailtudos/metrics/internal/infrastructure/metrics/reporter"
 )
 
-const ServerURL = "http://localhost:8080"
-
-var (
-	pollInterval   = time.Second * 2
-	reportInterval = time.Second * 10
-)
-
 func main() {
-	reporter := reporter.NewMetricsReporter(ServerURL)
+	cfgAgent := agent.NewAgentConfig()
+
+	reporter := reporter.NewMetricsReporter(cfgAgent.ServerAddress)
 	metrics := collector.NewRuntimeMetrics()
-	pollTicker := time.NewTicker(pollInterval)
-	reportTicker := time.NewTicker(reportInterval)
+	pollTicker := time.NewTicker(cfgAgent.PollInterval)
+	reportTicker := time.NewTicker(cfgAgent.ReportInterval)
 
 	for {
 		select {

@@ -5,11 +5,14 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/mihailtudos/metrics/internal/infrastructure/config/server"
 	"github.com/mihailtudos/metrics/internal/infrastructure/http/handlers"
 	"github.com/mihailtudos/metrics/internal/infrastructure/persistence/store"
 )
 
 func main() {
+	srvConfig := server.NewServerConfig()
+
 	router := chi.NewRouter()
 	store := store.NewMetricStore()
 	handlers := handlers.NewHandler(store)
@@ -18,8 +21,8 @@ func main() {
 	router.Get("/", handlers.HandleShowAllMetrics)
 	router.Get("/value/{type}/{name}", handlers.HandleShowMetricValue)
 
-	log.Println("Server started 🔥")
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	log.Println("Server started at ", srvConfig.Address)
+	if err := http.ListenAndServe(srvConfig.Address, router); err != nil {
 		panic(err)
 	}
 }
