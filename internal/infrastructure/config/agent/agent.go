@@ -2,6 +2,7 @@ package agent
 
 import (
 	"flag"
+	"fmt"
 	"sync"
 	"time"
 )
@@ -13,7 +14,7 @@ type AgentConfig struct {
 }
 
 const (
-	DefaultServerAddress  = "http://localhost:8080"
+	DefaultServerAddress  = "localhost:8080"
 	DefaultReportInterval = 10
 	DefaultPollInterval   = 2
 )
@@ -40,7 +41,7 @@ func NewAgentConfig() *AgentConfig {
 		flag.Parse()
 
 		instance = &AgentConfig{
-			ServerAddress:  flagsStr.ServerAddress,
+			ServerAddress:  fmt.Sprintf("http://%s", flagsStr.ServerAddress),
 			ReportInterval: time.Duration(flagsStr.ReportInterval) * time.Second,
 			PollInterval:   time.Duration(flagsStr.PollInterval) * time.Second,
 		}

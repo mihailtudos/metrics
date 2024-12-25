@@ -30,10 +30,12 @@ run/test3:
     	-binary-path=cmd/server/server
 	
 run/test4:
-	metricstest -test.v -test.run=^TestIteration4[AB]*$ \
-    	-source-path=. \
-    	-agent-binary-path=cmd/agent/agent \
-    	-binary-path=cmd/server/server
+	ADDRESS=localhost:8080 TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration4$$" \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+        -server-port=8080 \
+        -source-path=. \
+        -agent-binary-path=cmd/agent/agent
 
 run/tests:
 	go test ./... -count=1 -coverprofile ./profiles/cover.out && go tool cover -func ./profiles/cover.out
