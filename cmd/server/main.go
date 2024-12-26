@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
@@ -26,7 +27,7 @@ func main() {
 	router.Get("/", handlers.HandleShowAllMetrics)
 	router.Get("/value/{type}/{name}", handlers.HandleShowMetricValue)
 
-	logger.InfoContext(nil, "Server started at ", slog.String("address", srvConfig.Address))
+	logger.InfoContext(context.Background(), "Server started at ", slog.String("address", srvConfig.Address))
 	if err := http.ListenAndServe(srvConfig.Address, router); err != nil {
 		panic(err)
 	}
