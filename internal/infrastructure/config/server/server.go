@@ -3,6 +3,8 @@ package server
 import (
 	"flag"
 	"sync"
+
+	"github.com/mihailtudos/metrics/internal/infrastructure/config/utils"
 )
 
 type ServerConfig struct {
@@ -24,6 +26,7 @@ func NewServerConfig() *ServerConfig {
 
 		flag.Parse()
 
+		utils.OverrideStringEnvValueWithOsEnv(&cfg.Address, "ADDRESS")
 		instance = cfg
 	})
 

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/mihailtudos/metrics/internal/infrastructure/config/utils"
 )
 
 type AgentConfig struct {
@@ -39,6 +41,16 @@ func NewAgentConfig() *AgentConfig {
 		flag.IntVar(&flagsStr.PollInterval, "p", DefaultPollInterval, "poll interval in seconds")
 
 		flag.Parse()
+
+		utils.OverrideStringEnvValueWithOsEnv(&flagsStr.ServerAddress, "ADDRESS")
+		
+		if err := utils.OverrideIntEnvValueWithOsEnv(&flagsStr.ReportInterval, "REPORT_INTERVAL"); err != nil {
+			panic(err)
+		}
+		
+		if err := utils.OverrideIntEnvValueWithOsEnv(&flagsStr.PollInterval, "POLL_INTERVAL"); err != nil {
+			panic(err)
+		}
 
 		instance = &AgentConfig{
 			ServerAddress:  fmt.Sprintf("http://%s", flagsStr.ServerAddress),
