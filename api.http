@@ -11,3 +11,40 @@ Content-Type: application/text
 POST http://localhost:8080/update/counter/PollCount/120
 Content-Type: application/text
 
+### Create gauge metric with JSON body
+POST http://localhost:8080/update
+Content-Type: application/json
+
+{
+  "id": "HeapAlloc",
+  "type": "gauge",
+  "value": 123.45
+}
+
+### Get counter metric with JSON body
+POST http://localhost:8080/value
+Content-Type: application/json
+
+{
+  "id": "HeapAlloc",
+  "type": "gauge"
+}
+
+### Create counter metric with JSON body
+POST http://localhost:8080/update
+Content-Type: application/json
+
+{
+  "id": "PollCount",
+  "type": "counter",
+  "delta": 2
+}
+
+### Get counter metric with JSON body
+POST http://localhost:8080/value
+Content-Type: application/json
+
+{
+  "id": "PollCount",
+  "type": "counter"
+}

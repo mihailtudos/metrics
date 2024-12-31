@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -70,7 +71,7 @@ func TestHandlePOSTMetric(t *testing.T) {
 			store := mocks.NewMetricsStore(t)
 			tc.setupMock(store)
 
-			handler := NewHandler(store)
+			handler := NewHandler(store, &slog.Logger{})
 
 			r := chi.NewRouter()
 			r.Post("/update/{type}/{name}/{value}", handler.HandlePOSTMetric)

@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"text/template"
@@ -30,12 +32,53 @@ type MetricsStore interface {
 
 type Handler struct {
 	MetricsStore
+	Logger *slog.Logger
 }
 
-func NewHandler(Store MetricsStore) *Handler {
+func NewHandler(Store MetricsStore, logger *slog.Logger) *Handler {
 	return &Handler{
 		MetricsStore: Store,
+		Logger:       logger,
 	}
+}
+
+func (h *Handler) HandlePOSTMetricWithJSON(w http.ResponseWriter, r *http.Request) {
+	var metric metrics.Metric
+
+	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	h.Logger.Info("received metric", slog.Any("metric", metric))
+
+	if err := h.Store(metric); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		h.Logger.Info("failed to store metric")
+		return
+	}
+
+	updatedMetric, err := h.MetricsStore.GetOneMetric(metric.ID)
+	if err != nil {
+		if errors.Is(err, metrics.ErrMetricNotFound) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.Logger.Error("failed to get metric")
+		return
+	}
+
+	bData, err := json.Marshal(updatedMetric)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(bData)
 }
 
 func (h *Handler) HandlePOSTMetric(w http.ResponseWriter, r *http.Request) {
@@ -102,6 +145,33 @@ func (h *Handler) HandleShowAllMetrics(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	tmpl.Execute(w, metrics)
+}
+func (h *Handler) HandleShowMetricValueWithJSON(w http.ResponseWriter, r *http.Request) {
+	var metric metrics.Metric
+	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	metric, err := h.MetricsStore.GetOneMetric(metric.ID)
+	if err != nil {
+		if errors.Is(err, metrics.ErrMetricNotFound) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	bData, err := json.Marshal(metric)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(bData)
 }
 
 func (h *Handler) HandleShowMetricValue(w http.ResponseWriter, r *http.Request) {
