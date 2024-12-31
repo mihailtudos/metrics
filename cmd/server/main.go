@@ -27,8 +27,8 @@ func main() {
 	router.Get("/", handlers.HandleShowAllMetrics)
 	router.Get("/value/{type}/{name}", handlers.HandleShowMetricValue)
 
-	router.Post("/update", handlers.HandlePOSTMetricWithJSON)
-	router.Post("/value", handlers.HandleShowMetricValueWithJSON)
+	router.Post("/update/", handlers.HandlePOSTMetricWithJSON)
+	router.Post("/value/", handlers.HandleShowMetricValueWithJSON)
 
 	logger.InfoContext(context.Background(), "Server started at ", slog.String("address", srvConfig.Address))
 	if err := http.ListenAndServe(srvConfig.Address, router); err != nil {

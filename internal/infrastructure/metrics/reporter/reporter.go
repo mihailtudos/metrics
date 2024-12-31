@@ -1,7 +1,10 @@
 package reporter
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -26,22 +29,40 @@ func (m *MetricsReporter) ReportMetrics(metrics map[string]interface{}) {
 	// Content-Type: text/plain
 
 	for key, val := range metrics {
-		t := domain.GaugeType
+		var metric domain.Metric
 
-		_, ok := val.(int64)
+		intVal, ok := val.(int64)
 		if ok {
-			t = domain.CounterType
+			metric = domain.Metric{
+				ID:    key,
+				MType: "counter",
+				Delta: &intVal,
+			}
+		} else {
+			floatVal, ok := val.(float64)
+			if ok {
+				metric = domain.Metric{
+					ID:    key,
+					MType: "gauge",
+					Value: &floatVal,
+				}
+			}
 		}
 
-		url := fmt.Sprintf("%s/update/%s/%s/%v", m.ServerURL, t, key, val)
+		url := fmt.Sprintf("%s/update", m.ServerURL)
+		bData, err := json.Marshal(metric)
+		if err != nil {
+			log.Printf("failed to marshal metric: %v", err)
+			continue
+		}
 
-		req, err := http.NewRequest(http.MethodPost, url, nil)
+		req, err := http.NewRequest(http.MethodPost, url, io.Reader(bytes.NewBuffer(bData)))
 		if err != nil {
 			log.Printf("failed to create request: %v", err)
 			continue
 		}
 
-		req.Header.Set("Content-Type", "text/plain")
+		req.Header.Set("Content-Type", "application/json")
 
 		res, err := m.client.Do(req)
 		if err != nil {
