@@ -50,7 +50,7 @@ func (h *Handler) HandlePOSTMetricWithJSON(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	h.Logger.Info("received metric", slog.Any("metric", metric))
+	h.Logger.Info("decoded metric", slog.Any("metric", metric))
 
 	if err := h.Store(metric); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -69,6 +69,8 @@ func (h *Handler) HandlePOSTMetricWithJSON(w http.ResponseWriter, r *http.Reques
 		h.Logger.Error("failed to get metric")
 		return
 	}
+
+	h.Logger.Info("stored metric", slog.Any("metric", updatedMetric))
 
 	bData, err := json.Marshal(updatedMetric)
 	if err != nil {
@@ -146,12 +148,15 @@ func (h *Handler) HandleShowAllMetrics(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	tmpl.Execute(w, metrics)
 }
+
 func (h *Handler) HandleShowMetricValueWithJSON(w http.ResponseWriter, r *http.Request) {
 	var metric metrics.Metric
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	h.Logger.Info("decoded metric", slog.Any("metric", metric))
 
 	metric, err := h.MetricsStore.GetOneMetric(metric.ID)
 	if err != nil {
@@ -163,6 +168,8 @@ func (h *Handler) HandleShowMetricValueWithJSON(w http.ResponseWriter, r *http.R
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	h.Logger.Info("stored metric", slog.Any("metric", metric))
 
 	bData, err := json.Marshal(metric)
 	if err != nil {

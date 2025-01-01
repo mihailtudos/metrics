@@ -24,10 +24,6 @@ func NewMetricsReporter(ServerURL string) *MetricsReporter {
 }
 
 func (m *MetricsReporter) ReportMetrics(metrics map[string]interface{}) {
-	// http://<АДРЕС_СЕРВЕРА>/update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>
-	// http://localhost:8080
-	// Content-Type: text/plain
-
 	for key, val := range metrics {
 		var metric domain.Metric
 
@@ -49,7 +45,7 @@ func (m *MetricsReporter) ReportMetrics(metrics map[string]interface{}) {
 			}
 		}
 
-		url := fmt.Sprintf("%s/update", m.ServerURL)
+		url := fmt.Sprintf("%s/update/", m.ServerURL)
 		bData, err := json.Marshal(metric)
 		if err != nil {
 			log.Printf("failed to marshal metric: %v", err)

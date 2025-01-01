@@ -12,7 +12,7 @@ POST http://localhost:8080/update/counter/PollCount/120
 Content-Type: application/text
 
 ### Create gauge metric with JSON body
-POST http://localhost:8080/update
+POST http://localhost:8080/update/
 Content-Type: application/json
 
 {
@@ -31,7 +31,7 @@ Content-Type: application/json
 }
 
 ### Create counter metric with JSON body
-POST http://localhost:8080/update
+POST http://localhost:8080/update/
 Content-Type: application/json
 
 {
@@ -41,7 +41,7 @@ Content-Type: application/json
 }
 
 ### Get counter metric with JSON body
-POST http://localhost:8080/value
+POST http://localhost:8080/value/
 Content-Type: application/json
 
 {
