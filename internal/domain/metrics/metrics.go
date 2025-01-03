@@ -8,8 +8,8 @@ const (
 )
 
 type Metric struct {
-	ID    string     `json:"id"` // metric name
-	MType MetricType `json:"type"` // metric type (gauge or counter)
+	ID    string     `json:"id"`              // metric name
+	MType MetricType `json:"type"`            // metric type (gauge or counter)
 	Delta *int64     `json:"delta,omitempty"` // value for counter metrics
 	Value *float64   `json:"value,omitempty"` // value for gauge metrics
 }

@@ -22,6 +22,7 @@ func main() {
 	handlers := handlers.NewHandler(store, logger)
 
 	router.Use(middleware.WithLogger(logger))
+	router.Use(middleware.WithCompress)
 
 	router.Post("/update/{type}/{name}/{value}", handlers.HandlePOSTMetric)
 	router.Get("/", handlers.HandleShowAllMetrics)

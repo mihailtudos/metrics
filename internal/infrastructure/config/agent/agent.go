@@ -43,11 +43,11 @@ func NewAgentConfig() *AgentConfig {
 		flag.Parse()
 
 		utils.OverrideStringEnvValueWithOsEnv(&flagsStr.ServerAddress, "ADDRESS")
-		
+
 		if err := utils.OverrideIntEnvValueWithOsEnv(&flagsStr.ReportInterval, "REPORT_INTERVAL"); err != nil {
 			panic(err)
 		}
-		
+
 		if err := utils.OverrideIntEnvValueWithOsEnv(&flagsStr.PollInterval, "POLL_INTERVAL"); err != nil {
 			panic(err)
 		}

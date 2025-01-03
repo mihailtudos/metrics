@@ -145,6 +145,7 @@ func (h *Handler) HandleShowAllMetrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
 	tmpl.Execute(w, metrics)
 }

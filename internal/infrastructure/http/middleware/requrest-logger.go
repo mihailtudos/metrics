@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type responseData  struct {
+type responseData struct {
 	status int
 	size   int
 }
@@ -22,8 +22,8 @@ func (r *loggingResponseWriter) Write(b []byte) (int, error) {
 }
 
 func (r *loggingResponseWriter) WriteHeader(statusCode int) {
-    r.responseData.status = statusCode
-    r.ResponseWriter.WriteHeader(statusCode)
+	r.responseData.status = statusCode
+	r.ResponseWriter.WriteHeader(statusCode)
 }
 
 func WithLogger(log *slog.Logger) func(next http.Handler) http.Handler {
@@ -34,14 +34,14 @@ func WithLogger(log *slog.Logger) func(next http.Handler) http.Handler {
 				status: 0,
 				size:   0,
 			}
-			
+
 			lrw := loggingResponseWriter{
 				ResponseWriter: w,
 				responseData:   responseData,
 			}
 
 			next.ServeHTTP(&lrw, r)
-			
+
 			log.Info("request: ",
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),

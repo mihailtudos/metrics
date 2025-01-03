@@ -61,6 +61,13 @@ run/test7:
         -source-path=. \
         -agent-binary-path=cmd/agent/agent \
 
+run/test8:
+	TEMP_FILE=out.txt metricstest -test.v -test.run=^TestIteration8$ \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+        -server-port=8080 \
+        -source-path=.-agent-binary-path=cmd/agent/agent \
+
 run/tests:
 	go test ./... -count=1 -coverprofile ./profiles/cover.out && go tool cover -func ./profiles/cover.out
 
@@ -70,4 +77,4 @@ show/cover:
 run/vet:
 	go vet -vettool=$(which statictest) ./...
 
-PHONY: run/test1, run/test2, run/test3, run/test4, run/test5, run/test6, run/test7, build/server, run/tests, show/cover, run/agent, run/vet
+PHONY: run/test1, run/test2, run/test3, run/test4, run/test5, run/test6, run/test7, run/test8, build/server, run/tests, show/cover, run/agent, run/vet
