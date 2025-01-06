@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -24,7 +25,7 @@ func main() {
 
 	srvConfig := server.NewServerConfig()
 	logger := logger.NewLogger()
-	logger.DebugContext(ctx, "server configuration", slog.Any("config", srvConfig))
+	logger.InfoContext(ctx, "server configuration", slog.Any("config", srvConfig))
 
 	router := chi.NewRouter()
 	store := store.NewMetricStore(
@@ -64,6 +65,7 @@ func main() {
 	<-ctx.Done()
 	logger.InfoContext(ctx, "got interruption signal")
 
+	time.Sleep(2 * time.Second)
 	if err := srv.Shutdown(context.TODO()); err != nil {
 		logger.InfoContext(ctx, "server shutdown returned an err")
 	}

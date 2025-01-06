@@ -23,7 +23,7 @@ const (
 var (
 	instance             *ServerConfig
 	once                 sync.Once
-	DefaultFileStorePath = "metrics-db.json"
+	DefaultFileStorePath = "/tmp/metrics-db.json"
 )
 
 func NewServerConfig() *ServerConfig {

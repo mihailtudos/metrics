@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mihailtudos/metrics/internal/domain/metrics"
+	utils "github.com/mihailtudos/metrics/utils/logger"
 )
 
 type FileStorage struct {
@@ -48,7 +49,9 @@ func NewFileStore(ctx context.Context, logger *slog.Logger, storeInterval time.D
 	}
 
 	if store.restore {
-		store.LoadInFile()
+		if err := store.LoadInFile(ctx); err != nil {
+			logger.ErrorContext(ctx, "failed to load in the metrics file", utils.ErrValue(err))
+		}
 	}
 
 	return store
@@ -91,8 +94,10 @@ func (m *FileStorage) GetOneMetric(metricName string) (metrics.Metric, error) {
 	return metric, nil
 }
 
-func (m *FileStorage) LoadInFile() error {
-	m.Logger.InfoContext(context.Background(), "loading metrics from file")
+func (m *FileStorage) LoadInFile(ctx context.Context) error {
+	m.Logger.InfoContext(ctx, "loading metrics from file")
+	m.StoreFile.Seek(0, 0)
+
 	return m.Decoder.Decode(&m.Metrics)
 }
 
@@ -110,6 +115,8 @@ func (m *FileStorage) SaveFile(shouldSync bool) error {
 	}
 
 	m.Logger.InfoContext(context.Background(), "saving metrics to file")
+	m.StoreFile.Seek(0, 0)
+	m.StoreFile.Truncate(0)
 	return m.Encoder.Encode(m.Metrics)
 }
 

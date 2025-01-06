@@ -68,7 +68,7 @@ run/test8:
         -server-port=8080 \
         -source-path=.-agent-binary-path=cmd/agent/agent \
 
-autotest/run9:
+run/test9:
 	TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration9$$" \
 		-agent-binary-path=cmd/agent/agent \
 		-binary-path=cmd/server/server \
