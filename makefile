@@ -68,6 +68,47 @@ run/test8:
         -server-port=8080 \
         -source-path=.-agent-binary-path=cmd/agent/agent \
 
+autotest/run9:
+	TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration9$$" \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+        -server-port=8080 \
+        -source-path=. \
+        -file-storage-path=/tmp/metrics-db.json \
+        -agent-binary-path=cmd/agent/agent \
+
+autotest/run10: db/run
+	 SERVER_PORT=8080 TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration10[AB]$$" \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+		-database-dsn='postgres://metrics:metrics@localhost:5432/metrics?sslmode=disable' \
+        -server-port=8080 \
+        -source-path=.
+
+autotest/run11: db/run
+	 SERVER_PORT=8080 TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration11$$" \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+		-database-dsn='postgres://metrics:metrics@localhost:5432/metrics?sslmode=disable' \
+        -server-port=8080 \
+        -source-path=.
+
+autotest/run12: db/run
+	 SERVER_PORT=8080 TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration12$$" \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+		-database-dsn='postgres://metrics:metrics@localhost:5432/metrics?sslmode=disable' \
+        -server-port=8080 \
+        -source-path=.
+
+autotest/run13: db/run
+	 SERVER_PORT=8080 TEMP_FILE=out.txt metricstest -test.v -test.run="^TestIteration13$$" \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+		-database-dsn='postgres://metrics:metrics@localhost:5432/metrics?sslmode=disable' \
+        -server-port=8080 \
+        -source-path=.
+		
 run/tests:
 	go test ./... -count=1 -coverprofile ./profiles/cover.out && go tool cover -func ./profiles/cover.out
 
