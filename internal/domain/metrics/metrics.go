@@ -7,6 +7,8 @@ const (
 	GaugeType   MetricType = "gauge"
 )
 
+type Metrics map[string]Metric
+
 type Metric struct {
 	ID    string     `json:"id"`              // metric name
 	MType MetricType `json:"type"`            // metric type (gauge or counter)

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mihailtudos/metrics/internal/infrastructure/config/utils"
+	utils "github.com/mihailtudos/metrics/utils/configs"
 )
 
 type AgentConfig struct {

@@ -1,12 +1,17 @@
 package memstore
 
-import "github.com/mihailtudos/metrics/internal/domain/metrics"
+import (
+	"log/slog"
+
+	"github.com/mihailtudos/metrics/internal/domain/metrics"
+)
 
 type MemStorage struct {
-	Metrics map[string]metrics.Metric
+	Metrics metrics.Metrics
+	Logger  *slog.Logger
 }
 
-func NewMemStore() *MemStorage {
+func NewMemStore(logger *slog.Logger) *MemStorage {
 	return &MemStorage{
 		Metrics: map[string]metrics.Metric{},
 	}
